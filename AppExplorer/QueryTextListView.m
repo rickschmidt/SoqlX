@@ -62,12 +62,24 @@ static const CGFloat MARGIN = 5.0;
 	return text;
 }
 
+-(NSString *)title{
+    return title;
+}
+
 - (void)setText:(NSString *)t {
 	[t retain];
 	[text release];
 	text = t;
 	[self recalcLayout];
 	[self setNeedsDisplay:YES];
+}
+
+-(void)setTitle:(NSString *)t{
+    [t retain];
+    [title release];
+    title = t;
+    [self recalcLayout];
+    [self setNeedsDisplay:YES];
 }
 
 -(void)setFrameWidth:(CGFloat)w {
@@ -92,6 +104,7 @@ static const CGFloat MARGIN = 5.0;
 	[bg set];
 	NSRectFill(b);
 	[text drawWithRect:textRect options:NSStringDrawingUsesLineFragmentOrigin attributes:textAttributes];
+//    [title drawWithRect:textRect options:NSStringDrawingUsesLineFragmentOrigin attributes:textAttributes];
 	[[NSColor grayColor] set];
 	NSRectFill(NSMakeRect(b.origin.x, NSMaxY(b)-1, b.size.width, 1));
 }
@@ -121,7 +134,7 @@ static const CGFloat MARGIN = 5.0;
 @end
 
 @interface QueryTextListView ()
--(QueryTextListViewItem *)createItem:(NSString *)text;
+-(QueryTextListViewItem *)createItem:(NSString *)text:(NSString *) title;
 @end
 
 @implementation QueryTextListView
@@ -191,7 +204,7 @@ static const CGFloat MARGIN = 5.0;
 	}
 	if (!found) {
 		// create and insert a new item at the top of hte list
-		QueryTextListViewItem *i = [self createItem:text];
+		QueryTextListViewItem *i = [self createItem:text:@"test3"];
 		[items insertObject:i atIndex:0];
 		// remove the oldest item if needed
 		if ([items count] > 10) {
@@ -204,17 +217,18 @@ static const CGFloat MARGIN = 5.0;
 	return TRUE;
 }
 
--(QueryTextListViewItem *)createItem:(NSString *)text {
+-(QueryTextListViewItem *)createItem:(NSString *)text:(NSString *)title {
 	NSRect b = [self bounds];
 	QueryTextListViewItem *i = [[QueryTextListViewItem alloc] initWithFrame:b attributes:textAttributes listView:self];
 	[i setText:text];
+    [i setTitle:title];
 	[self addSubview:i];
 	return [i autorelease];
 }
 
 -(void)setInitialItems:(NSArray *)texts {
 	for (NSString *text in texts) 
-		[items addObject:[self createItem:text]];
+		[items addObject:[self createItem:text:@"test2"]];
 	[self layoutChildren:[self bounds].size.width];
 }
 

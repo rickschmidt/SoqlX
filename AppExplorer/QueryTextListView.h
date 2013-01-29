@@ -35,6 +35,7 @@
 // each item is managed by a QueryTextListViewItem
 @interface QueryTextListView : NSView {
 	NSMutableArray                  *items;
+    NSMutableDictionary             *itemsD;
 	NSDictionary                    *textAttributes;
     id<QueryTextListViewDelegate>   delegate;
 }
@@ -50,6 +51,7 @@
 
 // The current list of QueryTextListViewItems in the list view.
 -(NSArray *)items;
+-(NSDictionary *)itemsD;
 
 @property (assign, nonatomic) id<QueryTextListViewDelegate> delegate;
 
@@ -58,6 +60,7 @@
 // The view/container for a single item in the list.
 @interface QueryTextListViewItem : NSView {
 	NSString		*text;
+    NSString        *title;
 	NSDictionary	*textAttributes;
 	CGFloat			verticalPad;
 	NSRect			textRect;
@@ -73,6 +76,7 @@
 
 @property (retain) NSString *text;
 @property (retain) NSColor	*backgroundColor;
+@property (retain) NSString *title;
 
 -(void)setFrameWidth:(CGFloat)w;
 

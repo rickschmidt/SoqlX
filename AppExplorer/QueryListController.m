@@ -36,14 +36,16 @@ static NSString *RECENT_SHOWN = @"recentQueriesVisible";
 }
 
 - (void)addQuery:(NSString *)soql {
-	soql = [soql stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	soql = [soql stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]; 
 	if ([view upsertHead:soql]) {
         // save the current list of recent queries
-		NSMutableArray *q = [NSMutableArray arrayWithCapacity:[[view items] count]];
+//		NSMutableArray *q = [NSMutableArray arrayWithCapacity:[[view items] count]];
+        NSMutableDictionary *dq = [NSMutableDictionary dictionaryWithCapacity:[[view items]count]];
 		for (QueryTextListViewItem *i in [view items]) 
-			[q addObject:[i text]];
+//			[q addObject:[i text]];
+            [dq setValue:@" test" forKey:[i text]]; 
 			
-		[[NSUserDefaults standardUserDefaults] setObject:q forKey:[self prefName:RECENT_QUERIES]];
+		[[NSUserDefaults standardUserDefaults] setObject:dq forKey:[self prefName:RECENT_QUERIES]];
 	}
 }
 
