@@ -67,6 +67,7 @@
 	
 	// new world order, uses binding
 	NSString						*statusText;
+    IBOutlet NSTextField            *queryRunTime;
 	BOOL							schemaViewIsActive;
 }
 
@@ -88,6 +89,7 @@
 - (IBAction)filterSObjectListView:(id)sender;
 
 @property (retain) NSString *statusText;
+@property (retain) NSTextField *queryRunTime;
 @property (assign) BOOL schemaViewIsActive;
 
 - (BOOL)isLoggedIn;

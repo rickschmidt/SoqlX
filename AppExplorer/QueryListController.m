@@ -26,17 +26,30 @@ static NSString *RECENT_SHOWN = @"recentQueriesVisible";
 
 @implementation QueryListController
 
+@synthesize tableViewItems;
 -(void)awakeFromNib {
     [super awakeFromNib];
 	[panelWindow setContentBorderThickness:28.0 forEdge:NSMinYEdge];
+    [tableView setDelegate:self];
+    [tableView setDataSource:self];
+    [self loadSavedItems];
+    tableViewItems = [[NSMutableArray alloc]initWithCapacity:10];
+    [tableView reloadData];
 }
 
 -(NSString *)windowVisiblePrefName {
     return RECENT_SHOWN;
 }
 
+
+//incoming soql strings
 - (void)addQuery:(NSString *)soql {
-	soql = [soql stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]; 
+	soql = [soql stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSLog(@"adding query %@",soql);
+    [tableViewItems addObject:soql];
+
+    NSLog(@"tableview %@", tableViewItems);
+    [tableView reloadData];
 	if ([view upsertHead:soql]) {
         // save the current list of recent queries
 //		NSMutableArray *q = [NSMutableArray arrayWithCapacity:[[view items] count]];
@@ -60,21 +73,37 @@ static NSString *RECENT_SHOWN = @"recentQueriesVisible";
 -(void)loadSavedItems {
     NSUserDefaults *def = [NSUserDefaults standardUserDefaults];
     NSArray *saved = [def arrayForKey:[self prefName:RECENT_QUERIES]];
+
     if (saved == nil) {
         // see if we need to migrate the existing items from the previous versions pref scheme.
         saved = [def arrayForKey:RECENT_QUERIES];
+      //  [tableViewItems initWithArray:[def arrayForKey:RECENT_QUERIES]];
         if (saved != nil) {
             [def setObject:saved forKey:[self prefName:RECENT_QUERIES]];
             [def removeObjectForKey:RECENT_QUERIES];
+            
         }
     }
+    NSLog(@"saved %@",saved);
 	if (saved != nil)
         [view setInitialItems:saved];
+      //  [tableViewItems initWithArray:saved];
 }
     
 -(void)onPrefsPrefixSet:(NSString *)pp {
     [self loadSavedItems];
     [super onPrefsPrefixSet:pp];
 }
+/////Table view code
+- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
+    NSLog(@"tv count %lu",[tableViewItems count]);
+    return [tableViewItems count];
+}
 
+- (NSView *)tableView:(NSTableView *)tableView
+   viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row{
+    NSTableCellView *text = [[NSTableCellView alloc]init];
+    text.textField = [tableViewItems objectAtIndex:row];
+    return text;
+}
 @end

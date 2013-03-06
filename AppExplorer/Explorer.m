@@ -55,7 +55,7 @@ static CGFloat MIN_PANE_SIZE = 128.0f;
 
 @implementation Explorer
 
-@synthesize statusText, schemaViewIsActive;
+@synthesize statusText, schemaViewIsActive,queryRunTime;
 
 + (void)initialize {
 	NSMutableDictionary * defaults = [NSMutableDictionary dictionary];
@@ -409,18 +409,22 @@ typedef enum SoqlParsePosition {
 	[self setStatusText:[NSString stringWithFormat:@"loaded %ld of %d total rows", (unsigned long)[[qr records] count], [qr size]]];
 }
 
-- (void)permformQuery:(BOOL)useQueryAll {
+- (void)permformQuery:(BOOL)useQueryAll {   
 	[self updateProgress:YES];
 	[queryListController addQuery:[self soqlString]];
 	[[NSUserDefaults standardUserDefaults] setObject:[self soqlString] forKey:@"soql"];
 	@try {
 		NSString *query = [[self soqlString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         ZKQueryResult *qr = nil;
+         NSDate *queryStartTime = [NSDate date];
         if ([[query lowercaseString] hasPrefix:@"find "]) {
             qr = [SearchQueryResult searchQueryResults:[sforce search:query]];
         } else {
             qr = useQueryAll ? [sforce queryAll:query] : [sforce query:query];
         }
+        double runTime_ms = [queryStartTime timeIntervalSinceNow] * -1000.0;
+        [queryRunTime setStringValue:[NSString stringWithFormat:@"%.2f",runTime_ms]];
+        //NSLog(@"RUNTIME %@",[runTime_ms stringValue]);
 		if ([qr size] > 0) {
 			if ([[qr records] count] == 0) {
 				[self setStatusText:[NSString stringWithFormat:@"Count query result is %d rows", [qr size]]];

@@ -24,11 +24,14 @@
 
 // This manages the recent queries list/window
 
-@interface QueryListController : BaseWindowToggleController {
+@interface QueryListController : BaseWindowToggleController <NSTableViewDelegate, NSTableViewDataSource> {
 	IBOutlet QueryTextListView	*view;
+    IBOutlet NSTableView *tableView;
+    NSMutableArray *tableViewItems;
 }
 
 @property (assign) id<QueryTextListViewDelegate> delegate;
+@property (assign) NSMutableArray *tableViewItems;
 
 -(void)addQuery:(NSString *)soql;
 
